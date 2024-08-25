@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         string fileName = Console.ReadLine();
         int N = int.Parse(Console.ReadLine());
@@ -28,6 +28,34 @@ class Program
         }
 
         // Continue a Implementação
-        // ...
+        char[] delimiters = new char[]{' ', '\n', '\r', '\t'};
+        string[] textArray = text.Split(delimiters);
+        Task<int>[] arrayFrequence = new Task<int>[words.Length];
+        
+        for(int i = 0; i < words.Length; i++)
+        {
+            arrayFrequence[i] = FindingWordRepetition(words[i], textArray);
+        }
+
+        for(int i = 0; i < words.Length; i++)
+        {
+            Console.WriteLine($"{words[i]}: {await arrayFrequence[i]}");
+        }
+    }
+
+    static async Task<int> FindingWordRepetition(string palavra, string[] textArray)
+    {
+        int frequence = 0;
+        await Task.Run(() =>
+        {
+            foreach(string currentWord in textArray)
+            {
+                if(currentWord.Equals(palavra, StringComparison.OrdinalIgnoreCase))
+                {
+                    frequence++;
+                }
+            }
+        });
+        return frequence;
     }
 }
