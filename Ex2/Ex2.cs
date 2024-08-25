@@ -23,8 +23,8 @@ class Program
         Stopwatch stopwatch = Stopwatch.StartNew();
         Task<double> media = CalcularMedia(sequence);
         Task<double> mediana = CaclularMediana(sequence);
-        Task<double> variancia = CalcularVariancia(sequence);
-        Task<double> desvioPadrao = CalcularDesvioPadrao(sequence);
+        Task<double> variancia = CalcularVariancia(sequence, media);
+        Task<double> desvioPadrao = CalcularDesvioPadrao(sequence, media);
         stopwatch.Stop();
 
         Console.WriteLine($"Para N = {N} temos:\n");
@@ -66,22 +66,21 @@ class Program
         }
     }
 
-    static async Task<double> CalcularVariancia(double[] array)
+    static async Task<double> CalcularVariancia(double[] array, Task<double> media)
     {
-        double media = await CalcularMedia(array);
         double somaQuadrados = 0;
 
         foreach (double item in array)
         {
-            double diferenca = item - media;
+            double diferenca = item - await media;
             somaQuadrados += (diferenca) * (diferenca);
         }
 
         return somaQuadrados / array.Length;
     }
 
-    static async Task<double> CalcularDesvioPadrao(double[] array)
+    static async Task<double> CalcularDesvioPadrao(double[] array, Task<double> media)
     {
-        return Math.Sqrt(await CalcularVariancia(array));
+        return Math.Sqrt(await CalcularVariancia(array, media));
     }
 }
