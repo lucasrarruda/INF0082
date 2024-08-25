@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         // Ler N da entrada
         int N = int.Parse(Console.ReadLine());
@@ -18,7 +20,68 @@ class Program
         }
 
         // Continue a Implementação
-        // ...
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        Task<double> media = CalcularMedia(sequence);
+        Task<double> mediana = CaclularMediana(sequence);
+        Task<double> variancia = CalcularVariancia(sequence);
+        Task<double> desvioPadrao = CalcularDesvioPadrao(sequence);
+        stopwatch.Stop();
 
+        Console.WriteLine($"Para N = {N} temos:\n");
+        Console.WriteLine($"- Média = {await media}");
+        Console.WriteLine($"- Mediana = {await mediana}");
+        Console.WriteLine($"- Variância = {await variancia}");
+        Console.WriteLine($"- Desvio Padrão = {await desvioPadrao}");
+        Console.WriteLine($"Tempo: {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    static async Task<double> CalcularMedia(double[] array)
+    {
+        double total = 0;
+        double media = 0.0;
+        await Task.Run(() =>
+        {
+            foreach(double item in array)
+            {
+                total += item;
+            }
+            media = total / array.Length;
+        });
+        
+        return media;
+    }
+
+    static async Task<double> CaclularMediana(double[] array)
+    {
+        int indiceMeio = array.Length / 2;
+        await Task.Run(() => Array.Sort(array));
+
+        if (array.Length % 2 == 0)
+        {
+            return (array[indiceMeio - 1] + array[indiceMeio]) / 2;
+        }
+        else
+        {
+            return array[indiceMeio];
+        }
+    }
+
+    static async Task<double> CalcularVariancia(double[] array)
+    {
+        double media = await CalcularMedia(array);
+        double somaQuadrados = 0;
+
+        foreach (double item in array)
+        {
+            double diferenca = item - media;
+            somaQuadrados += (diferenca) * (diferenca);
+        }
+
+        return somaQuadrados / array.Length;
+    }
+
+    static async Task<double> CalcularDesvioPadrao(double[] array)
+    {
+        return Math.Sqrt(await CalcularVariancia(array));
     }
 }
