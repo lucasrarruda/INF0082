@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 class Program
 {
+    static readonly string ENDPOINT = "https://pokeapi.co/api/v2/pokemon/"
     static void Main(string[] args)
     {
         string[] input = Console.ReadLine().Split(' ');
@@ -17,4 +19,13 @@ class Program
         // Continue a Implementação
         // ...
     }
+};
+
+class Pokemon
+{
+    [JsonProperty("name")]
+    public string Name { get; set; }
+
+    [JsonProperty("types")]
+    public List<string> Types { get; set; }
 }
