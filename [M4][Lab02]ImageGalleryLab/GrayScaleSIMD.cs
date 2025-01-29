@@ -94,7 +94,11 @@ namespace ImageProcessing
                 // Agora multiplique esses valores pelos coeficientes de cada canal usando Vetorização (SIMD) (R=0.3 , G=0.59, B=0.11) 
                 // E no final você vai ter um Vector chamado grayFloat. Então seu trabalho a parte II desse trabalho estará pronta.
 
-                Vector<float> grayFloat = new();/* Aqui é o resultado do SIMD. Seu trabalho de codificação terminaaqui*/
+                Vector<float> rVector = new Vector<float>(rValues);
+                Vector<float> gVector = new Vector<float>(gValues);
+                Vector<float> bVector = new Vector<float>(bValues);
+
+                Vector<float> grayFloat = rVector * rCoeff + gVector * gCoeff + bVector * bCoeff;/* Aqui é o resultado do SIMD. Seu trabalho de codificação terminaaqui*/
 
                 // Converte o vetor de grayscale para bytes e atualiza os dados
                 for (int j = 0; j < simdLength; j++)
