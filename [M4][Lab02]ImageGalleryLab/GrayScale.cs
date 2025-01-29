@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Collections.Concurrent;
 
 namespace ImageProcessing
 {
@@ -26,11 +27,25 @@ namespace ImageProcessing
 
             if (staticPartitioner)
             {
+                var partitioner = Partitioner.Create(imageFiles, true);
 
+                Parallel.ForEach(partitioner, parallelOptions, (imagePath) =>
+                {
+                    ProcessImage(imagePath, baseOutputPath);
+                });
             }
             else
             {
                 // Dynamic
+                var partitioner = Partitioner.Create(0, imageFiles.Length, 2);
+
+                Parallel.ForEach(partitioner, parallelOptions, (range) =>
+                {
+                    for (int i = range.Item1; i < range.Item2; i++)
+                    {
+                        ProcessImage(imageFiles[i], baseOutputPath);
+                    }
+                });
             }
         }
 
@@ -47,11 +62,31 @@ namespace ImageProcessing
 
             if (staticPartitioner)
             {
+                var partitioner = Partitioner.Create(imageFiles, true);
 
+                await Task.Run(() =>
+                {
+                    Parallel.ForEach(partitioner, parallelOptions, (imagePath) =>
+                    {
+                        ProcessImage(imagePath, baseOutputPath);
+                    });
+                });
             }
             else
             {
                 // Dynamic
+                var partitioner = Partitioner.Create(0, imageFiles.Length, 2);
+
+                await Task.Run(() =>
+                {
+                    Parallel.ForEach(partitioner, parallelOptions, (range) =>
+                    {
+                        for (int i = range.Item1; i < range.Item2; i++)
+                        {
+                            ProcessImage(imageFiles[i], baseOutputPath);
+                        }
+                    });
+                });
             }
 
             /*var tasks = imageFiles.Select(imagePath =>
